@@ -7,25 +7,18 @@ st.set_page_config(
 )
 st.title("DocumentGPT")
 
-if "messages" not in st.session_state:
-    st.session_state["messages"] = []
-st.write(st.session_state["messages"])
+st.markdown("""
+Welcome!
+            
+Use this chatbot to ask questions to an AI about your files!
+""")
 
-def send_message(message, role, save=True):
-    with st.chat_message(role):
-        st.write(message)
-    if save:
-        st.session_state["messages"].append({"message":message, "role": role})
+file = st.file_uploader("Upload a .txt .pdf or .docs file", type=["pdf","txt","docx"])
 
-for message in st.session_state["messages"]:
-    send_message(message["message"],message["role"],save=False)
-
-message = st.chat_input("Put a message to the ai ")
-
-if message:
-    send_message(message, "human")
-    time.sleep(2)
-    send_message(f"You said: {message}" , "ai")
-
-    with st.sidebar:
-        st.write(st.session_state)
+if file:
+    st.write(file)
+    file_content = file.read()
+    file_path = "./.cache/files/{file.name}"
+    st.write(file_content, file_path)
+    with open(file_path,"wb") as f:
+        f.write(file_content)

@@ -1,4 +1,5 @@
 import time
+import os
 from uuid import UUID
 from langchain.schema.output import ChatGenerationChunk, GenerationChunk
 import streamlit as st
@@ -33,21 +34,16 @@ class ChatCallbackHandler(BaseCallbackHandler):
         self.message += token
         self.message_box.markdown(self.message)
 
-llm = ChatOpenAI(
-    temperature=0.1,
-    streaming=True,
-    callbacks=[
-        ChatCallbackHandler(),
-    ]
-)
+
 
 @st.cache_data(show_spinner="Embedding file...")
 def embed_file(file):
     file_content = file.read()
+    os.makedirs(f"./.cache/files/", exist_ok=True)
     file_path = f"./.cache/files/{file.name}"
     with open(file_path,"wb") as f:
         f.write(file_content)
-    cache_dir=LocalFileStore("./.cache/embeddings/{file.name}")
+    cache_dir=LocalFileStore(f"./.cache/embeddings/{file.name}")
 
     splitter = CharacterTextSplitter.from_tiktoken_encoder(
         separator="\n",
@@ -55,11 +51,11 @@ def embed_file(file):
         chunk_overlap=100,
     )
 
-    loader = UnstructuredFileLoader("./files/document.txt")
+    loader = UnstructuredFileLoader(file_path)
 
     docs = loader.load_and_split(text_splitter=splitter)
 
-    embeddings = OpenAIEmbeddings()
+    embeddings = OpenAIEmbeddings(openai_api_key=st.session_state["openai_key"])
 
     cached_embeddings = CacheBackedEmbeddings.from_bytes_store(
         embeddings, cache_dir
@@ -85,6 +81,9 @@ def paint_history():
 
 def format_docs(docs):
     return "\n\n".join(document.page_content for document in docs)
+def save_api_key(api_key):
+    st.session_state["openai_key"] = openai_key
+
 prompt = ChatPromptTemplate.from_messages([
     (
         "system",
@@ -110,7 +109,23 @@ Upload your files on the sidebar.
 with st.sidebar:
     file = st.file_uploader("Upload a .txt .pdf or .docs file", type=["pdf","txt","docx"])
     openai_key = st.text_input("Insert your OPENAI_API_KEY...")
+    button = st.button("KEY 저장")
     github_url = st.text("https://github.com/NewM8n/FULLSTACK-GPT")
+
+    if button:
+        save_api_key(openai_key)
+        st.write(f"API_KEY = {openai_key}")
+        if openai_key == "":
+            st.warning("OPEN_API_KEY 를 넣어주세요.")
+
+llm = ChatOpenAI(
+    temperature=0.1,
+    streaming=True,
+    callbacks=[
+        ChatCallbackHandler(),
+    ],
+    openai_api_key=st.session_state["openai_key"]
+)
 
 if file and openai_key :
     retriever = embed_file(file)

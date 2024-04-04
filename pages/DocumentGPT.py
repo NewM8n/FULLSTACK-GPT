@@ -111,6 +111,7 @@ with st.sidebar:
     openai_key = st.text_input("Insert your OPENAI_API_KEY...")
     button = st.button("KEY 저장")
     github_url = st.text("https://github.com/NewM8n/FULLSTACK-GPT")
+    app_url = st.text("https://fullstack-gpt-newm8n.streamlit.app/DocumentGPT")
 
     if button:
         save_api_key(openai_key)
@@ -118,15 +119,25 @@ with st.sidebar:
         if openai_key == "":
             st.warning("OPEN_API_KEY 를 넣어주세요.")
 
-llm = ChatOpenAI(
-    temperature=0.1,
-    streaming=True,
-    callbacks=[
-        ChatCallbackHandler(),
-    ],
-    openai_api_key=st.session_state["openai_key"]
-)
+if openai_key:
+    llm = ChatOpenAI(
+        temperature=0.1,
+        streaming=True,
+        callbacks=[
+            ChatCallbackHandler(),
+        ],
+        openai_api_key=st.session_state["openai_key"]
+    )
+else:
+    st.title("PLEASE WRITE OPENAI_API_KEY")
 
+    st.markdown("""
+    Welcome!
+                
+    Use this chatbot to ask questions to an AI about your files!
+                
+    PLEASE WRITE OPENAI_API_KEY.
+    """)
 if file and openai_key :
     retriever = embed_file(file)
     send_message("I'm ready! Ask away!","ai", save=False)

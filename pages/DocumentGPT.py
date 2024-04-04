@@ -131,13 +131,6 @@ if openai_key:
 else:
     st.title("PLEASE WRITE OPENAI_API_KEY")
 
-    st.markdown("""
-    Welcome!
-                
-    Use this chatbot to ask questions to an AI about your files!
-                
-    PLEASE WRITE OPENAI_API_KEY.
-    """)
 if file and openai_key :
     retriever = embed_file(file)
     send_message("I'm ready! Ask away!","ai", save=False)

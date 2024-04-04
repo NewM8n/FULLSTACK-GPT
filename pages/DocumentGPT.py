@@ -129,7 +129,7 @@ if openai_key:
         openai_api_key=st.session_state["openai_key"]
     )
 else:
-    st.title("PLEASE WRITE OPENAI_API_KEY")
+    st.markdown("PLEASE WRITE OPENAI_API_KEY")
 
 if file and openai_key :
     retriever = embed_file(file)

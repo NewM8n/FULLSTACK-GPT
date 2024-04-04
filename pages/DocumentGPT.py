@@ -112,6 +112,7 @@ with st.sidebar:
     button = st.button("KEY 저장")
     github_url = st.text("https://github.com/NewM8n/FULLSTACK-GPT")
     app_url = st.text("https://fullstack-gpt-newm8n.streamlit.app/DocumentGPT")
+    maker = st.text("made by Evelyn🦄")
 
     if button:
         save_api_key(openai_key)

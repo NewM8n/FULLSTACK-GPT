@@ -18,7 +18,7 @@ print(
 )
 
 st.set_page_config(
-    page_title="QuizGPT | D26 과제",
+    page_title="QuizGPT",
     page_icon="☘️",
 )
 

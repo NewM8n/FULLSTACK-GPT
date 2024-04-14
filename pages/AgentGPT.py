@@ -27,7 +27,7 @@ print(
 )
 
 st.set_page_config(
-    page_title="SiteGPT | D29 과제",
+    page_title="SiteGPT",
     page_icon="📃",
 )
 

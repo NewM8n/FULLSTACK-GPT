@@ -9,10 +9,32 @@ from pydantic import BaseModel, Field
 from langchain.agents import initialize_agent, AgentType
 from langchain.utilities import DuckDuckGoSearchAPIWrapper
 
-llm = ChatOpenAI(temperature=0.1, model_name="gpt-3.5-turbo-1106")
+def save_api_key(api_key):
+    st.session_state["openai_key"] = openai_key
 
-alpha_vantage_api_key = os.environ.get("ALPHA_VANTAGE_API_KEY")
+with st.sidebar:
+    file = st.file_uploader("Upload a .txt .pdf or .docs file", type=["pdf","txt","docx"])
+    openai_key = st.text_input("Insert your OPENAI_API_KEY...")
+    button = st.button("KEY 저장")
+    github_url = st.text("https://github.com/NewM8n/FULLSTACK-GPT")
+    app_url = st.text("https://fullstack-gpt-newm8n.streamlit.app/DocumentGPT")
+    maker = st.text("made by Evelyn🦄")
 
+    if button:
+        save_api_key(openai_key)
+        st.write(f"API_KEY = {openai_key}")
+        if openai_key == "":
+            st.warning("OPEN_API_KEY 를 넣어주세요.")
+
+if openai_key:
+    llm = ChatOpenAI(
+        temperature=0.1,
+        model_name="gpt-3.5-turbo-1106",
+        streaming=True,
+        openai_api_key=st.session_state["openai_key"]
+    )
+else:
+    st.markdown("PLEASE WRITE OPENAI_API_KEY")
 
 class StockMarketSymbolSearchToolArgsSchema(BaseModel):
     query: str = Field(
@@ -52,7 +74,7 @@ class CompanyOverviewTool(BaseTool):
 
     def _run(self, symbol):
         r = requests.get(
-            f"https://www.alphavantage.co/query?function=OVERVIEW&symbol={symbol}&apikey={alpha_vantage_api_key}"
+            f"https://www.alphavantage.co/query?function=OVERVIEW&symbol={symbol}&apikey={openai_key}"
         )
         return r.json()
 
@@ -67,7 +89,7 @@ class CompanyIncomeStatementTool(BaseTool):
 
     def _run(self, symbol):
         r = requests.get(
-            f"https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol={symbol}&apikey={alpha_vantage_api_key}"
+            f"https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol={symbol}&apikey={openai_key}"
         )
         return r.json()["annualReports"]
 
@@ -82,7 +104,7 @@ class CompanyStockPerformanceTool(BaseTool):
 
     def _run(self, symbol):
         r = requests.get(
-            f"https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={symbol}&apikey={alpha_vantage_api_key}"
+            f"https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={symbol}&apikey={openai_key}"
         )
         response = r.json()
         return list(response["Weekly Time Series"].items())[:200]

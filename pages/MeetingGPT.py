@@ -14,17 +14,37 @@ from langchain.schema import StrOutputParser
 from langchain.vectorstores.faiss import FAISS
 from langchain.embeddings import CacheBackedEmbeddings, OpenAIEmbeddings
 
-llm = ChatOpenAI(
-    temperature=0.1,
-)
-
 has_transcript = os.path.exists("./.cache/podcast.txt")
 
 splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
     chunk_size=800,
     chunk_overlap=100,
 )
+def save_api_key(api_key):
+    st.session_state["openai_key"] = openai_key
 
+with st.sidebar:
+    file = st.file_uploader("Upload a .txt .pdf or .docs file", type=["pdf","txt","docx"])
+    openai_key = st.text_input("Insert your OPENAI_API_KEY...")
+    button = st.button("KEY 저장")
+    github_url = st.text("https://github.com/NewM8n/FULLSTACK-GPT")
+    app_url = st.text("https://fullstack-gpt-newm8n.streamlit.app/DocumentGPT")
+    maker = st.text("made by Evelyn🦄")
+
+    if button:
+        save_api_key(openai_key)
+        st.write(f"API_KEY = {openai_key}")
+        if openai_key == "":
+            st.warning("OPEN_API_KEY 를 넣어주세요.")
+
+if openai_key:
+    llm = ChatOpenAI(
+        temperature=0.1,
+        streaming=True,
+        openai_api_key=st.session_state["openai_key"]
+    )
+else:
+    st.markdown("PLEASE WRITE OPENAI_API_KEY")
 
 @st.cache_data()
 def embed_file(file_path):

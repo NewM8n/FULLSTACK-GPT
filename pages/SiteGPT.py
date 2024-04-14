@@ -67,7 +67,7 @@ with st.sidebar:
     st.divider()
     st.markdown(
         """
-        GitHub 링크: https://github.com/LifeFi/py_w08_fullstack_gpt_d15/blob/d29_sitegpt/pages/D29_SiteGPT.py
+        GitHub 링크: https://github.com/NewM8n/FULLSTACK-GPT
         """
     )
 

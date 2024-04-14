@@ -59,7 +59,7 @@ with st.sidebar:
     st.divider()
     st.markdown(
         """
-        GitHub 링크: https://github.com/LifeFi/py_w08_fullstack_gpt_d15/blob/d31_agents/d31_agents.ipynb
+        GitHub 링크: https://github.com/NewM8n/FULLSTACK-GPT
         """
     )
 
